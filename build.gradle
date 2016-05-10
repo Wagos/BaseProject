@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+    ext{
+        targetSDKVersion = 23
+        minSDKVersion = 16
+        buildToolVersion = "23.0.3"
+        supportLibraryVersion = "23.3.0"
+        playServicesVersion = "8.4.0"
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
