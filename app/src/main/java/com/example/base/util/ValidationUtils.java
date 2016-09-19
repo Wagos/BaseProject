@@ -29,12 +29,9 @@ public class ValidationUtils {
         ArrayList<String> neverAskPermissions = new ArrayList<>();
         getPermissionGroup(activity, deniedPermissions, neverAskPermissions, permissionList);
         if (!neverAskPermissions.isEmpty()) {
-            displaySnackbar(root, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent settingsIntent = getSettingsActivityIntent(activity);
-                    activity.startActivityForResult(settingsIntent, SETTINGS_REQUEST_CODE);
-                }
+            displaySnackbar(root, v -> {
+                Intent settingsIntent = getSettingsActivityIntent(activity);
+                activity.startActivityForResult(settingsIntent, SETTINGS_REQUEST_CODE);
             });
             result = false;
         } else if (!deniedPermissions.isEmpty()) {
@@ -51,12 +48,9 @@ public class ValidationUtils {
         final FragmentActivity activity = fragment.getActivity();
         getPermissionGroup(activity, deniedPermissions, neverAskPermissions, permissionList);
         if (!neverAskPermissions.isEmpty()) {
-            displaySnackbar(root, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent settingsIntent = getSettingsActivityIntent(activity);
-                    fragment.startActivityForResult(settingsIntent, SETTINGS_REQUEST_CODE);
-                }
+            displaySnackbar(root, v -> {
+                Intent settingsIntent = getSettingsActivityIntent(activity);
+                fragment.startActivityForResult(settingsIntent, SETTINGS_REQUEST_CODE);
             });
             result = false;
         } else if (!deniedPermissions.isEmpty()) {

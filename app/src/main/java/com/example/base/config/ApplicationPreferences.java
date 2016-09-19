@@ -1,8 +1,11 @@
 package com.example.base.config;
 
+import android.content.SharedPreferences;
 
-import hrisey.Preferences;
-
-@Preferences
 public class ApplicationPreferences {
+    private final SharedPreferences preferences;
+
+    ApplicationPreferences(SharedPreferences sharedPreferences) {
+        preferences = sharedPreferences;
+    }
 }

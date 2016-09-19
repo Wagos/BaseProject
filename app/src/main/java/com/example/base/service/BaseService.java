@@ -3,14 +3,17 @@ package com.example.base.service;
 import com.example.base.api.BaseApi;
 import com.example.base.config.ApplicationPreferences;
 
-import lombok.AllArgsConstructor;
-
 /**
  * Created by Wagos.
  */
-@AllArgsConstructor
 public class BaseService {
-    private BaseApi api;
-    private ApplicationPreferences preferences;
-    private Repository reposytory;
+    private final BaseApi api;
+    private final ApplicationPreferences preferences;
+    private final Repository reposytory;
+
+    public BaseService(BaseApi api, ApplicationPreferences preferences, Repository reposytory) {
+        this.api = api;
+        this.preferences = preferences;
+        this.reposytory = reposytory;
+    }
 }

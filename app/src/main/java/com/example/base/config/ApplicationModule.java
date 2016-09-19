@@ -10,6 +10,8 @@ import com.example.base.service.BaseService;
 import com.example.base.service.Repository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 
@@ -35,32 +37,32 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    public Context provideContext() {
+    Context provideContext() {
         return application;
     }
 
     @Provides
     @Singleton
-    public ApplicationPreferences provideApplicationPreferences(Gson gson) {
+    ApplicationPreferences provideApplicationPreferences(Gson gson) {
         return new ApplicationPreferences(PreferenceManager.getDefaultSharedPreferences(application));
     }
 
     @Provides
     @Singleton
-    public SharedPreferences provideNoBackUpPreferences(){
+    SharedPreferences provideNoBackUpPreferences() {
         return application.getSharedPreferences(NO_BACKUP_PREFERENCES, Context.MODE_PRIVATE);
     }
 
     @Provides
     @Singleton
-    public BaseService provideBaseService(BaseApi api, ApplicationPreferences preferences,
-                                          Repository repository) {
+    BaseService provideBaseService(BaseApi api, ApplicationPreferences preferences,
+                                   Repository repository) {
         return new BaseService(api, preferences, repository);
     }
 
     @Provides
     @Singleton
-    public BaseApi provideBaseApi(Context context, Gson gson, ApplicationPreferences preferences) {
+    BaseApi provideBaseApi(Context context, Gson gson, ApplicationPreferences preferences) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         int cacheSize = 1024 * 1024; // 1 MiB
@@ -70,17 +72,24 @@ public class ApplicationModule {
             builder.cache(cache);
         }
 
+        OkHttpClient client = builder.build();
         Retrofit restAdapter = new Retrofit.Builder()
                 .baseUrl(BaseApi.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create(gson))
-                .client(builder.build())
+                .client(client)
                 .build();
+
+        Picasso picasso = new Picasso.Builder(context)
+                .downloader(new OkHttp3Downloader(client))
+                .build();
+        Picasso.setSingletonInstance(picasso);
+
         return restAdapter.create(BaseApi.class);
     }
 
     @Provides
     @Singleton
-    public Gson provideGson() {
+    Gson provideGson() {
         return new GsonBuilder()
 //                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
@@ -88,7 +97,7 @@ public class ApplicationModule {
 
     @Provides
     @Singleton
-    public Repository provideRepository(ApplicationPreferences preferences) {
+    Repository provideRepository(ApplicationPreferences preferences) {
         return new Repository(preferences);
     }
 }

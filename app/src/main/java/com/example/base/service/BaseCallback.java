@@ -5,7 +5,6 @@ import com.example.base.event.RequestType;
 
 import org.greenrobot.eventbus.EventBus;
 
-import lombok.RequiredArgsConstructor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -13,10 +12,13 @@ import retrofit2.Response;
 /**
  * Created by Wagos.
  */
-@RequiredArgsConstructor
 public class BaseCallback <T> implements Callback<T> {
 
     private final RequestType requestType;
+
+    public BaseCallback(RequestType requestType) {
+        this.requestType = requestType;
+    }
 
     protected void onSuccess(T body) {
         EventBus.getDefault().post(body);
