@@ -1,13 +1,18 @@
 package com.example.base.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-
 
 import com.example.base.BaseApplication;
 import com.example.base.config.AppComponent;
+import com.example.base.event.ErrorEvent;
+import com.example.base.util.ValidationUtils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
+import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 
@@ -43,5 +48,31 @@ abstract public class BaseActivity extends AppCompatActivity {
         if (eventBus.isRegistered(this)) {
             eventBus.unregister(this);
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == ValidationUtils.PERMISSION_REQUEST_CODE) {
+            ArrayList<String> deniedPermissions = ValidationUtils.getNeverAskPermissions(this, permissions, grantResults);
+            if (deniedPermissions.isEmpty()) {
+                allPermissionsGranted();
+            } else {
+                showPermissionRequired();
+            }
+        }
+    }
+
+    protected void showPermissionRequired() {
+
+    }
+
+    protected void allPermissionsGranted() {
+
+    }
+
+    @Subscribe
+    public void onError(ErrorEvent event) {
+
     }
 }

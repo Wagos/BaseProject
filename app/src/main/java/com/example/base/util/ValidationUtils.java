@@ -1,16 +1,16 @@
 package com.example.base.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 import com.example.base.BuildConfig;
@@ -23,70 +23,39 @@ public class ValidationUtils {
     public static final int PERMISSION_REQUEST_CODE = 13;
     private static final int SETTINGS_REQUEST_CODE = 14;
 
-    public static boolean checkPermissions(final Activity activity, View root, String... permissionList) {
-        boolean result = true;
-        ArrayList<String> deniedPermissions = new ArrayList<>();
-        ArrayList<String> neverAskPermissions = new ArrayList<>();
-        getPermissionGroup(activity, deniedPermissions, neverAskPermissions, permissionList);
-        if (!neverAskPermissions.isEmpty()) {
-            displaySnackbar(root, v -> {
-                Intent settingsIntent = getSettingsActivityIntent(activity);
-                activity.startActivityForResult(settingsIntent, SETTINGS_REQUEST_CODE);
-            });
-            result = false;
-        } else if (!deniedPermissions.isEmpty()) {
-            ActivityCompat.requestPermissions(activity, deniedPermissions.toArray(new String[deniedPermissions.size()]), PERMISSION_REQUEST_CODE);
-            result = false;
-        }
-        return result;
-    }
-
-    public static boolean checkPermissions(final Fragment fragment, View root, String... permissionList) {
-        boolean result = true;
-        ArrayList<String> deniedPermissions = new ArrayList<>();
-        ArrayList<String> neverAskPermissions = new ArrayList<>();
-        final FragmentActivity activity = fragment.getActivity();
-        getPermissionGroup(activity, deniedPermissions, neverAskPermissions, permissionList);
-        if (!neverAskPermissions.isEmpty()) {
-            displaySnackbar(root, v -> {
-                Intent settingsIntent = getSettingsActivityIntent(activity);
-                fragment.startActivityForResult(settingsIntent, SETTINGS_REQUEST_CODE);
-            });
-            result = false;
-        } else if (!deniedPermissions.isEmpty()) {
-            fragment.requestPermissions(deniedPermissions.toArray(new String[deniedPermissions.size()]), PERMISSION_REQUEST_CODE);
-            result = false;
-        }
-        return result;
-    }
-
-    private static void getPermissionGroup(Activity activity, ArrayList<String> deniedPermissions,
-                                           ArrayList<String> neverAskPermissions,
-                                           String[] permissionList) {
-        for (String permission : permissionList) {
-            if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-                    neverAskPermissions.add(permission);
-                } else {
-                    deniedPermissions.add(permission);
-                }
+    public static void requestPermissions(Object parent, String... permissionList) {
+        if (parent instanceof Activity) {
+            ActivityCompat.requestPermissions((Activity) parent, permissionList, PERMISSION_REQUEST_CODE);
+        } else {
+            if (parent instanceof Fragment) {
+                ((Fragment) parent).requestPermissions(permissionList, PERMISSION_REQUEST_CODE);
             }
         }
     }
 
-    private static void displaySnackbar(View root, View.OnClickListener listener) {
-        if (root != null) {
-            Snackbar.make(root, R.string.action_required_additional_permission, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.settings, listener)
-                    .show();
+    public static void displaySettingsSnackbar(View root, @StringRes int text, Object parent) {
+        Snackbar.make(root, text, Snackbar.LENGTH_LONG)
+                .setAction(R.string.settings, v -> startSettingsActivity(parent))
+                .show();
+    }
+
+    private static void startSettingsActivity(Object parent) {
+        if (parent instanceof Activity) {
+            Activity activity = (Activity) parent;
+            Intent intent = getSettingsActivityIntent(activity);
+            activity.startActivityForResult(intent, SETTINGS_REQUEST_CODE);
+        } else if (parent instanceof Fragment) {
+            Fragment fragment = (Fragment) parent;
+            Intent intent = getSettingsActivityIntent(fragment.getContext());
+            fragment.startActivityForResult(intent, SETTINGS_REQUEST_CODE);
         }
     }
 
     @NonNull
-    private static Intent getSettingsActivityIntent(Activity activity) {
+    private static Intent getSettingsActivityIntent(Context context) {
         Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         settingsIntent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-        if (settingsIntent.resolveActivity(activity.getPackageManager()) == null) {
+        if (settingsIntent.resolveActivity(context.getPackageManager()) == null) {
             settingsIntent = new Intent(Settings.ACTION_SETTINGS);
         }
         return settingsIntent;
@@ -96,9 +65,20 @@ public class ValidationUtils {
     public static boolean checkPermissionsGranted(@NonNull int[] grantResults) {
         boolean value = true;
         for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
+            if (result == PackageManager.PERMISSION_DENIED) {
                 value = false;
                 break;
+            }
+        }
+        return value;
+    }
+
+    public static ArrayList<String> getNeverAskPermissions(Activity activity, String[] permissions, @NonNull int[] grantResults) {
+        ArrayList<String> value = new ArrayList<>();
+        for (int i = 0; i < grantResults.length; i++) {
+            int result = grantResults[i];
+            if (result == PackageManager.PERMISSION_DENIED && !ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
+                value.add(permissions[i]);
             }
         }
         return value;
