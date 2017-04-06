@@ -3,8 +3,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'me.tatarka:gradle-retrolambda:3.6.0'
     }
+
 }
 
 allprojects {
@@ -13,10 +15,10 @@ allprojects {
     }
     ext{
         targetSDKVersion = 25
-        minSDKVersion = 16
-        buildToolVersion = "25.0.1"
-        supportLibraryVersion = "25.0.1"
-        playServicesVersion = "10.0.1"
+        minSDKVersion = 19
+        buildToolVersion = "25.0.2"
+        supportLibraryVersion = "25.3.1"
+        playServicesVersion = "10.2.1"
     }
 }
 

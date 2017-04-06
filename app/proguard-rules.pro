@@ -4,11 +4,14 @@
 -keepattributes Signature
 -keepattributes Exceptions
 
--keep class com.squareup.okhttp.** { *; }
--keep interface com.squareup.okhttp.** { *; }
 -dontwarn okio.**
 
 #EventBus
--keepclassmembers class * {
-    @de.greenrobot.event.Subscribe <methods>;
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
 }
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# android support library
+-keep class android.support.v7.widget.DefaultItemAnimator { *; }

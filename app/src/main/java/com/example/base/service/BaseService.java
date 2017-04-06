@@ -1,19 +1,23 @@
 package com.example.base.service;
 
 import com.example.base.api.BaseApi;
-import com.example.base.config.ApplicationPreferences;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Created by Wagos.
  */
+@Singleton
 public class BaseService {
     private final BaseApi api;
-    private final ApplicationPreferences preferences;
     private final Repository reposytory;
 
-    public BaseService(BaseApi api, ApplicationPreferences preferences, Repository reposytory) {
+    @Inject
+    public BaseService(BaseApi api, Repository reposytory) {
         this.api = api;
-        this.preferences = preferences;
         this.reposytory = reposytory;
     }
 }

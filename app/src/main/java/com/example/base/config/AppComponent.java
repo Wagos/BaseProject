@@ -9,6 +9,5 @@ import dagger.Component;
 @Singleton
 @Component(modules = ApplicationModule.class)
 public interface AppComponent {
-    //activity
-    void inject(MainActivity activity);
+    void inject(MainActivity mainActivity);
 }

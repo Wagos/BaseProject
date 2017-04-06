@@ -20,7 +20,6 @@ import butterknife.ButterKnife;
  * Created by Wagos.
  */
 abstract public class BaseActivity extends AppCompatActivity {
-
     protected EventBus eventBus = EventBus.getDefault();
 
     @Override

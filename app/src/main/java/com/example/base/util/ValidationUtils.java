@@ -23,14 +23,12 @@ public class ValidationUtils {
     public static final int PERMISSION_REQUEST_CODE = 13;
     private static final int SETTINGS_REQUEST_CODE = 14;
 
-    public static void requestPermissions(Object parent, String... permissionList) {
-        if (parent instanceof Activity) {
-            ActivityCompat.requestPermissions((Activity) parent, permissionList, PERMISSION_REQUEST_CODE);
-        } else {
-            if (parent instanceof Fragment) {
-                ((Fragment) parent).requestPermissions(permissionList, PERMISSION_REQUEST_CODE);
-            }
-        }
+    public static void requestPermissions(Activity parent, String... permissionList) {
+        ActivityCompat.requestPermissions(parent, permissionList, PERMISSION_REQUEST_CODE);
+    }
+
+    public static void requestPermissions(Fragment parent, String... permissionList) {
+        parent.requestPermissions(permissionList, PERMISSION_REQUEST_CODE);
     }
 
     public static void displaySettingsSnackbar(View root, @StringRes int text, Object parent) {

@@ -19,6 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.example.base.config.AppGlideModule"
+            android:value="GlideModule" />
     </application>
 
 </manifest>
